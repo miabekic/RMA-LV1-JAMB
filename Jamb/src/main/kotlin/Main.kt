@@ -56,9 +56,9 @@ fun main(){
                         "Baci kockice->1"
                     }
                     1, 2 -> {
-                        "Baci kockice->1, Provjeri rezultat bacanja->2, Zaključaj kockice->3, Otključaj kockice->4, Unesi u tablicu->5, Prikaži tablicu->6"
+                        "Baci kockice->1, Provjeri rezultat bacanja->2, Zaključaj kockice->3, Otključaj kockice->4, Unesi bodove u tablicu->5, Prikaži tablicu->6"
                     }
-                    else -> "Provjeri rezultat bacanja->2, Unesi u tablicu->5, Prikaži tablicu->6"
+                    else -> "Provjeri rezultat bacanja->2, Unesi bodove u tablicu->5, Prikaži tablicu->6"
                 }
                 do{
                     println(availableFunctionalities)
