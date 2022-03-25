@@ -1,8 +1,8 @@
  class ScoreTable {
      var result=0
-     var jamb: Int? = null
+     var yamb: Int? = null
      set(score){
-         if(jamb==null){
+         if(yamb==null){
              field=score
          }
      }
@@ -18,9 +18,9 @@
                 field=score
             }
         }
-    var triling: Int? = null
+    var trilling: Int? = null
         set(score){
-            if(triling==null){
+            if(trilling==null){
                 field=score
             }
         }
@@ -36,7 +36,7 @@
      }
 
      fun isFilled(): Boolean{
-         val values= setOf(jamb, scale, triling, poker, full)
+         val values= setOf(yamb, scale, trilling, poker, full)
          for(value in values){
              if(value==null){
                  return false

@@ -1,5 +1,5 @@
-enum class Values : ICalculator {
-    TRILING{
+enum class Category : ICalculator {
+    TRILLING{
         override fun calculate(diceValues: MutableList<Int>): Int {
             var result = 0
             val sameValues=diceValues.groupingBy { it }.eachCount().filterValues { it>2 }
@@ -56,7 +56,7 @@ enum class Values : ICalculator {
             } else result
         }
     },
-    JAMB {
+    YAMB {
         override fun calculate(diceValues: MutableList<Int>): Int {
             var result = 0
             val sameValues=diceValues.groupingBy { it }.eachCount().filterValues { it==5 }

@@ -1,57 +1,69 @@
 
 fun main(){
-    val die1=Die()
-    val die2=Die()
-    val die3=Die()
-    val die4=Die()
-    val die5=Die()
-    val die6=Die()
-    val dice=listOf(die1, die2, die3, die4, die5, die6)
+    val firstDie=Die()
+    val secondDie=Die()
+    val thirdDie=Die()
+    val fourthDie=Die()
+    val fifthDie=Die()
+    val sixthDie=Die()
+    val dice=listOf(firstDie, secondDie, thirdDie, fourthDie, fifthDie, sixthDie)
     var rolledDiceValues = mutableListOf<Int>()
     var chosenFunctionalityNumber: Int?
     var rollCounter=0
     var numberOfPlayers: Int?
-    var nameOfPlayer: String?
+    var playerName: String?
     val players= mutableListOf<Player>()
     var playerCounter=0
     val diceRoller=DiceRoller(dice)
     val diceLocker=DiceLocker(dice)
     val diceUnlocker=DiceUnlocker(dice)
+    val positions=listOf(1,2,3,4,5,6)
     var dicePositionNumbers: List<Int>?
+    val readNumber: () -> Int? = {try { readLine()?.toInt() } catch (e: NumberFormatException) { null }}
+    val readPositionNumbers: () -> List<Int>? = {try { readLine()?.split(',')?.map{ it.toInt()} } catch (e: NumberFormatException) { null } }
+    val isEveryPositionCorrect: (List<Int>?) -> Boolean? = {dicePositionNumbers: List<Int>? -> dicePositionNumbers?.all { it in positions }}
 
     do{
         print("Unesite broj igrača: ")
-        numberOfPlayers = try { readLine()?.toInt() } catch (e: NumberFormatException) { null }
-    }while(numberOfPlayers==null)
+        numberOfPlayers = readNumber()
+    }while(numberOfPlayers==null || numberOfPlayers<=0)
 
     while(playerCounter!=numberOfPlayers){
         playerCounter++
         do{
             print("Unesite ime $playerCounter. igrača: ")
-            nameOfPlayer= readLine()
-        } while (nameOfPlayer.isNullOrEmpty() || nameOfPlayer.any { it.isDigit() })
-        players.add(Player(nameOfPlayer))
+            playerName= readLine()
+        } while (playerName.isNullOrEmpty())
+        players.add(Player(playerName))
     }
 
     var availableFunctionalities: String
     var options: MutableList<Char>
+    val categories="${Category.TRILLING.name}->${Category.TRILLING.ordinal}, ${Category.SCALE.name}->${Category.SCALE.ordinal}, " +
+            "${Category.FULL.name}->${Category.FULL.ordinal}, ${Category.POKER.name}->${Category.POKER.ordinal}," +
+            " ${Category.YAMB.name}->${Category.YAMB.ordinal}"
+    var chosenOptionNumber: Int?
+
+    var calculatedValue: Int
+
+
     while(!players.all { it.scoreTable.isFilled() }){
         for(player in players){
+            println("Na potezu je igrač: ${player.name}")
             do{
-
                 availableFunctionalities = when (rollCounter) {
                     0 -> {
-                        "Baci kockice->1 (${player.name})"
+                        "Baci kockice->1"
                     }
                     1, 2 -> {
                         "Baci kockice->1, Provjeri rezultat bacanja->2, Zaključaj kockice->3, Otključaj kockice->4, Unesi u tablicu->5, Prikaži tablicu->6"
                     }
-                    else -> "Provjeri rezultat bacanja->2,  Unesi u tablicu->5, Prikaži tablicu->6"
+                    else -> "Provjeri rezultat bacanja->2, Unesi u tablicu->5, Prikaži tablicu->6"
                 }
                 do{
                     println(availableFunctionalities)
                     options=availableFunctionalities.filter{it.isDigit()}.toMutableList()
-                    chosenFunctionalityNumber = try { readLine()?.toInt() } catch (e: NumberFormatException) { null }
+                    chosenFunctionalityNumber = readNumber()
                 }while(chosenFunctionalityNumber?.digitToChar() !in options)
                     when (chosenFunctionalityNumber) {
                         1 -> {
@@ -60,106 +72,96 @@ fun main(){
                             rollCounter += 1
                         }
                         2 -> {
-                            val result: Int
-                            var chosenOptionNumber: Int?
                             do{
-                                println("${Values.SCALE}->1, ${Values.FULL}->2, ${Values.TRILING}->3, ${Values.POKER}->4, ${Values.JAMB}->5")
-                                chosenOptionNumber = try { readLine()?.toInt() } catch (e: NumberFormatException) { null }
-                            }while(chosenOptionNumber==null || chosenOptionNumber !in 1..5)
+                                println(categories)
+                                options=categories.filter{it.isDigit()}.toMutableList()
+                                chosenOptionNumber = readNumber()
+                            }while(chosenOptionNumber?.digitToChar() !in options)
 
                             when (chosenOptionNumber) {
-                                1 -> {
-                                    result=Values.SCALE.calculate(rolledDiceValues)
-                                    println("${Values.SCALE}: $result")
+                                Category.SCALE.ordinal -> {
+                                    calculatedValue=Category.SCALE.calculate(rolledDiceValues)
+                                    println("${Category.SCALE.name}: $calculatedValue")
                                 }
-                                2 -> {
-                                    result=Values.FULL.calculate(rolledDiceValues)
-                                    println("${Values.FULL}: $result")
+                                Category.FULL.ordinal -> {
+                                    calculatedValue=Category.FULL.calculate(rolledDiceValues)
+                                    println("${Category.FULL.name}: $calculatedValue")
                                 }
-                                3 -> {
-                                    result=Values.TRILING.calculate(rolledDiceValues)
-                                    println("${Values.TRILING}: $result")
+                                Category.TRILLING.ordinal -> {
+                                    calculatedValue=Category.TRILLING.calculate(rolledDiceValues)
+                                    println("${Category.TRILLING.name}: $calculatedValue")
                                 }
-                                4 -> {
-                                    result=Values.POKER.calculate(rolledDiceValues)
-                                    println("${Values.POKER}: $result")
+                                Category.POKER.ordinal -> {
+                                    calculatedValue=Category.POKER.calculate(rolledDiceValues)
+                                    println("${Category.POKER.name}: $calculatedValue")
                                 }
-                                5 -> {
-                                    result = Values.JAMB.calculate(rolledDiceValues)
-                                    println("${Values.JAMB}: $result")
+                                Category.YAMB.ordinal -> {
+                                    calculatedValue = Category.YAMB.calculate(rolledDiceValues)
+                                    println("${Category.YAMB.name}: $calculatedValue")
                                 }
                             }
                         }
                         3 -> {
-
-                            var isEveryPositionCorrect: Boolean?
                             do{
                                 println("Unesite pozicijske brojeve kockica koje želite zaključati; pr. 1,2,3 ili 5,2,1,6")
-                                dicePositionNumbers=try { readLine()?.split(',')?.map{ it.toInt()} } catch (e: NumberFormatException) { null }
-                                isEveryPositionCorrect=dicePositionNumbers?.all { it in 1..6 }
-                            } while (dicePositionNumbers==null || isEveryPositionCorrect!=true )
+                                dicePositionNumbers=readPositionNumbers()
+                            } while (dicePositionNumbers==null || isEveryPositionCorrect(dicePositionNumbers)!=true )
                             diceLocker.lockDice(dicePositionNumbers)
 
                         }
                         4 -> {
-                            var isEveryPositionCorrect: Boolean?
                             do{
                                 println("Unesite pozicijske brojeve kockica koje želite otključati; pr. 1,2,3 ili 5,2,1,6")
-                                dicePositionNumbers=try { readLine()?.split(',')?.map{ it.toInt()} } catch (e: NumberFormatException) { null }
-                                isEveryPositionCorrect=dicePositionNumbers?.all { it in 1..6 }
-                            } while (dicePositionNumbers==null || isEveryPositionCorrect!=true)
+                                dicePositionNumbers=readPositionNumbers()
+                            } while (dicePositionNumbers==null || isEveryPositionCorrect(dicePositionNumbers) != true)
                             diceUnlocker.unlockDice(dicePositionNumbers)
                         }
                         5 -> {
-                            var chosenOptionNumber: Int?
-                            var s = mapOf<String, Int>()
-                            if(player.scoreTable.jamb==null){
-                                s=s+Pair("${Values.JAMB}", 1)
-
-                            }
-                            if(player.scoreTable.full==null){
-                                s=s+Pair("${Values.FULL}", 2)
-
+                            var settableCategories = mapOf<String, Int>()
+                            if(player.scoreTable.trilling==null){
+                                settableCategories=settableCategories+Pair(Category.TRILLING.name, Category.TRILLING.ordinal)
                             }
                             if(player.scoreTable.scale==null){
-                                s=s+Pair("${Values.SCALE}", 3)
-
+                                settableCategories=settableCategories+Pair(Category.SCALE.name, Category.SCALE.ordinal)
+                            }
+                            if(player.scoreTable.full==null){
+                                settableCategories=settableCategories+Pair(Category.FULL.name, Category.FULL.ordinal)
                             }
                             if(player.scoreTable.poker==null){
-                                s=s+Pair("${Values.POKER}", 4)
+                                settableCategories=settableCategories+Pair(Category.POKER.name, Category.POKER.ordinal)
                             }
-                            if(player.scoreTable.triling==null){
-                                s=s+Pair("${Values.TRILING}", 5)
+                            if(player.scoreTable.yamb==null){
+                                settableCategories=settableCategories+Pair(Category.YAMB.name, Category.YAMB.ordinal)
+
                             }
-                            val calculatedValue: Int
                             do{
-                                println(s.toString().replace("{", "").replace("}", "").replace("=", "->"))
-                                chosenOptionNumber = try { readLine()?.toInt() } catch (e: NumberFormatException) { null }
-                            } while(!s.values.toMutableList().contains(chosenOptionNumber))
+                                println(settableCategories.toString().replace("{", "").replace("}", "").replace("=", "->"))
+                                chosenOptionNumber = readNumber()
+                            } while(!settableCategories.values.toMutableList().contains(chosenOptionNumber))
                             when (chosenOptionNumber) {
-                                1 -> {
-                                    calculatedValue=Values.JAMB.calculate(rolledDiceValues)
-                                    player.scoreTable.jamb=calculatedValue
+                                Category.YAMB.ordinal -> {
+                                    calculatedValue=Category.YAMB.calculate(rolledDiceValues)
+                                    player.scoreTable.yamb=calculatedValue
                                     player.scoreTable.addToResult(calculatedValue)
                                 }
-                                2 -> {
-                                    calculatedValue=Values.FULL.calculate(rolledDiceValues)
+                                Category.FULL.ordinal -> {
+                                    calculatedValue=Category.FULL.calculate(rolledDiceValues)
                                     player.scoreTable.full=calculatedValue
                                     player.scoreTable.addToResult(calculatedValue)
                                 }
-                                3 -> {
-                                    calculatedValue=Values.SCALE.calculate(rolledDiceValues)
+                                Category.SCALE.ordinal -> {
+                                    calculatedValue=Category.SCALE.calculate(rolledDiceValues)
                                     player.scoreTable.scale=calculatedValue
                                     player.scoreTable.addToResult(calculatedValue)
                                 }
-                                4 -> {
-                                    calculatedValue=Values.POKER.calculate(rolledDiceValues)
+                                Category.POKER.ordinal -> {
+                                    calculatedValue=Category.POKER.calculate(rolledDiceValues)
                                     player.scoreTable.poker=calculatedValue
                                     player.scoreTable.addToResult(calculatedValue)
                                 }
-                                5 -> {
-                                    calculatedValue=Values.TRILING.calculate(rolledDiceValues)
-                                    player.scoreTable.triling=calculatedValue
+                                Category.TRILLING.ordinal -> {
+                                    calculatedValue=Category.TRILLING.calculate(rolledDiceValues)
+                                    player.scoreTable.trilling=calculatedValue
                                     player.scoreTable.addToResult(calculatedValue)
                                 }
                             }
@@ -170,9 +172,8 @@ fun main(){
                     }
                 }while(chosenFunctionalityNumber!=5 && rollCounter <= 3)
             rollCounter=0
-            dicePositionNumbers= listOf(1,2,3,4,5,6)
-            diceUnlocker.unlockDice(dicePositionNumbers)
-            println("Vaš trenutni rezultat je: ${player.scoreTable.result}")
+            diceUnlocker.unlockDice(positions)
+            println("Vaš trenutni rezultat je: ${player.scoreTable.result}\n")
         }
     }
     var results= mapOf<String, Int>()
@@ -180,6 +181,8 @@ fun main(){
         results=results+Pair(player.name, player.scoreTable.result)
     }
     val maxResult=results.maxByOrNull { it.value }
-    println("Pobjednik je: ${maxResult?.key}, s ${maxResult?.value} bodova")
+    if(results.filter { it.value==maxResult?.value}.size>1){
+        println("Nitko nije pobijedio, nerješeno je.")
+    }else println("Pobjednik je: ${maxResult?.key}, s ${maxResult?.value} bodova")
 
 }

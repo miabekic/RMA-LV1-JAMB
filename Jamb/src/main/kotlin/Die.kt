@@ -1,6 +1,6 @@
 class Die{
 
-    private val values=listOf(1, 2, 3, 4, 5, 6)
+    private val values= setOf(1, 2, 3, 4, 5, 6)
     private var isLocked = false
     private var currentValue=1
 
